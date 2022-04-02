@@ -1,4 +1,4 @@
-local text_render = require "render.text"
+local text_render = require "darklord.render.text"
 
 local stat_ui = {}
 stat_ui.__index = stat_ui
@@ -16,6 +16,8 @@ function stat_ui:__call(health, money, sx, sy)
     local sy = sy or 3
     local w = gfx.getWidth()
     local h = gfx.getHeight()
+
+    gfx.setColor(1, 1, 1)
 
     stat_frame:draw(0, 0, 0, sx, sy)
     stat_frame:draw(w, 0, 0, -sx, sy)
