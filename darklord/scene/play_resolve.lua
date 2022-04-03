@@ -94,11 +94,15 @@ function play_resolve.draw_overlay(ctx)
 end
 
 function play_resolve.keypressed(ctx, key)
-    if key == "space" and not ctx.skipped then
-        ctx.skipped = true
-        while play_resolve.resolve_play(ctx, ctx.player, ctx.enemy) > 0 do end
-        while play_resolve.resolve_play(ctx, ctx.enemy, ctx.player_card) > 0 do end
-        ctx.timer:reset()
+    if key == "space" then
+        if not ctx.skipped then
+            ctx.skipped = true
+            while play_resolve.resolve_play(ctx, ctx.player, ctx.enemy) > 0 do end
+            while play_resolve.resolve_play(ctx, ctx.enemy, ctx.player) > 0 do end
+            ctx.timer:reset()
+        else
+            ctx.timer:finish()
+        end
     end
 end
 

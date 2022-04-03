@@ -5,19 +5,22 @@ local navigation = {}
 
 navigation.event_types = {"battle", "resource", "rest", "event"}
 
-function navigation.generate_event()
-    local pool = {}
+function navigation.generate_events()
+    local pool = list()
     local enemies = dl.enemies
 
     for _, enemy in pairs(enemies) do
         table.insert(pool, enemy)
     end
-    local enemy = pool[rng(#pool)]
 
-    return {
-        type="battle",
-        enemy=enemy
-    }
+    local enemies = pool:shuffle():sub(1, 3)
+    local events = {}
+
+    for _, enemy in ipairs(enemies) do
+        table.insert(events, {type="battle", enemy=enemy})
+    end
+
+    return events
 end
 
 function navigation.push_event(ctx, event)
@@ -27,7 +30,13 @@ function navigation.push_event(ctx, event)
 end
 
 function navigation.draw_event_card(event, x, y)
-    dl.render.event_card(event.type, x, y)
+    if event.type ~= "battle" then
+        dl.render.event_card(event.type, x, y)
+    else
+        local enemy = event.enemy
+        local frame = get_atlas(enemy.atlas):get_frame(enemy.image)
+        dl.render.event_card(frame, x, y)
+    end
 end
 
 function navigation.on_push(ctx, player)
@@ -39,11 +48,7 @@ function navigation.on_push(ctx, player)
         gfx.getHeight() / dl.constants.field_scale.y
     )
 
-    ctx.event_options = {
-        navigation.generate_event(),
-        navigation.generate_event(),
-        navigation.generate_event()
-    }
+    ctx.event_options = navigation.generate_events()
 
     ctx.player = player
     local y = math.floor((screen_size.y - card_size.h) / 2)

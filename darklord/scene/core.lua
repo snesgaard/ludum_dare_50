@@ -40,7 +40,7 @@ end
 function core.on_reveal(ctx, ...)
     --ctx.world:push(dl.scene.navigation)
     if not dl.scene.battle.is_dead(ctx.player) then
-        ctx.player:map(dl.component.threat, function(m) return m + 3 end)
+        ctx.player:map(dl.component.threat, function(m) return m + 5 end)
         ctx.world:push(dl.scene.navigation, ctx.player)
     end
 end

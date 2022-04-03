@@ -142,7 +142,7 @@ function rh.lucky(ctx)
 
     return ctx:entity()
         :set(dl.component.title, "Lucky")
-        :set(dl.component.text, "Doubles attack a random card in hand.")
+        :set(dl.component.text, "Doubles attack of a random card in hand.")
         :set(dl.component.effect, effect)
 end
 
@@ -151,6 +151,62 @@ function rh.better_block(ctx)
         :set(dl.component.title, "Better Block")
         :set(dl.component.defend, 10)
         :set(dl.component.text, "Just better.")
+end
+
+function rh.fiery_roar(ctx)
+    local defense_reduce = 3
+
+    local function effect(immediate, user, target)
+        local deck = target:ensure(dl.component.deck)
+
+        for _, card in ipairs(deck) do
+            battle.change_defend(card, -defense_reduce)
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.title, "Fiery Roar")
+        :set(dl.component.attack, 2)
+        :set(dl.component.defend, 5)
+        :set(dl.component.text, string.format("Reduce enemy defense by %i", defense_reduce))
+        :set(dl.component.effect, effect)
+end
+
+function rh.tomato_breath(ctx)
+    local attack_reduce = 3
+
+    local function effect(immediate, user, target)
+        local deck = target:ensure(dl.component.deck)
+
+        for _, card in ipairs(deck) do
+            battle.change_attack(card, -attack_reduce)
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.title, "Fire Breath")
+        :set(dl.component.attack, 8)
+        :set(dl.component.defend, 2)
+        :set(dl.component.text, string.format("Reduce enemy attack by %i", attack_reduce))
+        :set(dl.component.effect, effect)
+end
+
+function rh.barricade(ctx)
+    local defense_increase = 5
+
+    local function effect(immediate, user, target)
+        local deck = user:ensure(dl.component.deck)
+
+        for _, card in ipairs(deck) do
+            battle.change_defend(card, defense_increase)
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.title, "Barricade")
+        :set(dl.component.defend, 2)
+        :set(dl.component.text, string.format("Increase defend by %i", defense_increase))
+        :set(dl.component.effect, effect)
 end
 
 return setmetatable(rh, rh)

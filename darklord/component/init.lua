@@ -36,7 +36,8 @@ function rh.text(t) return t or "" end
 
 function rh.deck(deck) return deck or list() end
 
-function rh.ai_card_order(deck, count)
+function rh.ai_card_order(deck, count, fixed)
+    if fixed then return list(unpack(deck)) end
     return List.shuffle(deck):sub(1, count)
 end
 

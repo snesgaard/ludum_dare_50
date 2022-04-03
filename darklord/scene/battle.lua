@@ -28,9 +28,9 @@ function battle.on_push(ctx, player, enemy)
     local stat_threat = math.floor(threat / 3)
 
     ctx.enemy = ctx:entity()
-        :set(dl.component.health, 10 + threat)
+        :set(dl.component.health, (enemy.health or 10) + threat)
         :set(dl.component.deck, enemy_deck)
-        :set(dl.component.ai_card_order, enemy_deck, 3)
+        :set(dl.component.ai_card_order, enemy_deck, #enemy_deck, enemy.fixed_order)
         :set(dl.component.card_to_play)
 
 
@@ -64,11 +64,12 @@ function battle.on_reveal(ctx, confirmed)
         ctx.world:push(dl.scene.play_resolve, ctx.player, ctx.enemy)
     elseif confirmed == nil then
         battle.prepare_enemy_move(ctx.enemy)
-
         if battle.is_dead(ctx.enemy) then
             ctx.battle_is_over = true
             ctx.battle_end_animation = battle.enemy_end_animation
         elseif battle.is_dead(ctx.player) then
+            ctx.battle_is_over = true
+        elseif #ctx.player:ensure(dl.component.hand) == 0 then
             ctx.battle_is_over = true
         end
     end
@@ -81,13 +82,13 @@ function battle.update(ctx, dt)
         return
     end
 
-    if battle.is_dead(ctx.player) then
+    if battle.is_dead(ctx.player) or #ctx.player:ensure(dl.component.hand) == 0 then
         ctx.world:move(dl.scene.game_over)
     elseif battle.is_dead(ctx.enemy) then
-        local reward_pool = list(unpack(ctx.enemy_template.reward_pool)):shuffle()
+        local reward_pool = (ctx.enemy_template.card_pool + ctx.enemy_template.reward_pool):shuffle()
         local reward_instances = list()
 
-        for i = 1, 3 do
+        for i = 1, math.min(3, #reward_pool) do
             local card_type = reward_pool[i]
             table.insert(reward_instances, card_type(ctx))
         end
@@ -123,7 +124,7 @@ end
 battle.enemy_health_font = gfx.newFont(20, "mono")
 
 function battle.draw_enemy(ctx)
-    local enemy_frame = get_atlas("art/characters"):get_frame("angry_ooze")
+    local enemy_frame = get_atlas(ctx.enemy_template.atlas):get_frame(ctx.enemy_template.image)
     local w, h = enemy_frame:size()
     local fs = constants.field_scale
     local x, y = gfx.getWidth() / (2 * fs.x), gfx.getHeight() / (3 * fs.y)
@@ -269,7 +270,7 @@ function battle.keypressed(ctx, key)
         else
             ctx.card_hovered = ctx.card_hovered + 1
         end
-    elseif key == "space" and ctx.card_hovered and #to_play < battle.MAX_PLAY then
+    elseif key == "space" and ctx.card_hovered and #to_play < battle.MAX_PLAY and not ctx.battle_is_over then
         local card = hand[ctx.card_hovered]
         table.remove(hand, ctx.card_hovered)
         table.insert(to_play, card)

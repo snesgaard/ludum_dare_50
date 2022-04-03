@@ -1,0 +1,181 @@
+{ "frames": [
+   {
+    "filename": "angry_ooze.aseprite",
+    "frame": { "x": 111, "y": 0, "w": 107, "h": 91 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 11, "y": 1, "w": 105, "h": 89 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "sassy_saxophone.aseprite",
+    "frame": { "x": 218, "y": 80, "w": 67, "h": 116 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 23, "y": 3, "w": 65, "h": 114 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "attack_icon.aseprite",
+    "frame": { "x": 318, "y": 80, "w": 11, "h": 11 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 9, "h": 9 },
+    "sourceSize": { "w": 9, "h": 9 },
+    "duration": 100
+   },
+   {
+    "filename": "stat_frame.aseprite",
+    "frame": { "x": 66, "y": 287, "w": 81, "h": 28 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 79, "h": 26 },
+    "sourceSize": { "w": 96, "h": 64 },
+    "duration": 100
+   },
+   {
+    "filename": "card_back_event.aseprite",
+    "frame": { "x": 71, "y": 91, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "toasty_tomato.aseprite",
+    "frame": { "x": 218, "y": 0, "w": 108, "h": 80 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 5, "y": 9, "w": 106, "h": 78 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "demonic_deer.aseprite",
+    "frame": { "x": 0, "y": 90, "w": 71, "h": 103 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 19, "y": 21, "w": 69, "h": 101 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "warpig.aseprite",
+    "frame": { "x": 0, "y": 0, "w": 111, "h": 90 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 15, "y": 14, "w": 109, "h": 88 },
+    "sourceSize": { "w": 128, "h": 128 },
+    "duration": 100
+   },
+   {
+    "filename": "card_action_generic.aseprite",
+    "frame": { "x": 137, "y": 91, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "money_icon.aseprite",
+    "frame": { "x": 303, "y": 80, "w": 15, "h": 18 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 1, "y": 0, "w": 13, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "health_icon.aseprite",
+    "frame": { "x": 285, "y": 80, "w": 18, "h": 17 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 0, "y": 1, "w": 16, "h": 15 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "card_back_rest.aseprite",
+    "frame": { "x": 71, "y": 189, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "card_back_battle.aseprite",
+    "frame": { "x": 137, "y": 189, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "battle_card_back.aseprite",
+    "frame": { "x": 0, "y": 193, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "card_back_resource.aseprite",
+    "frame": { "x": 203, "y": 196, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "card_back_generic.aseprite",
+    "frame": { "x": 0, "y": 193, "w": 66, "h": 98 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 96 },
+    "sourceSize": { "w": 64, "h": 96 },
+    "duration": 100
+   },
+   {
+    "filename": "defend_icon.aseprite",
+    "frame": { "x": 203, "y": 91, "w": 10, "h": 10 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
+    "sourceSize": { "w": 8, "h": 8 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.3-beta14-x64",
+  "image": "atlas.png",
+  "format": "RGBA8888",
+  "size": { "w": 329, "h": 315 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "slices": [
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 62, "y": -1, "w": 5, "h": 5 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 58, "y": 12, "w": 7, "h": 5 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 4, "y": 4, "w": 1, "h": 1 } }] },
+   { "name": "icon", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 45, "y": 4, "w": 16, "h": 16 } }] },
+   { "name": "number", "color": "#f7a547ff", "keys": [{ "frame": 0, "bounds": {"x": 5, "y": 4, "w": 38, "h": 16 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 60, "y": 18, "w": 6, "h": 6 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 64, "y": 26, "w": 6, "h": 5 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 62, "y": 28, "w": 6, "h": 6 } }] },
+   { "name": "attack", "color": "#fe5b59ff", "keys": [{ "frame": 0, "bounds": {"x": 1, "y": 84, "w": 16, "h": 11 } }] },
+   { "name": "defend", "color": "#57b9f2ff", "keys": [{ "frame": 0, "bounds": {"x": 48, "y": 84, "w": 15, "h": 11 } }] },
+   { "name": "title", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 1, "y": 1, "w": 62, "h": 13 } }] },
+   { "name": "text", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 3, "y": 21, "w": 58, "h": 58 } }] },
+   { "name": "origin", "color": "#0000ffff", "keys": [{ "frame": 0, "bounds": {"x": 3, "y": 3, "w": 1, "h": 1 } }] }
+  ]
+ }
+}
