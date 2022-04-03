@@ -7,7 +7,22 @@ function play_resolve.on_push(ctx, player, enemy)
     ctx.player = player or ctx:entity()
     ctx.enemy = enemy or ctx:entity()
     ctx.change = {}
-    ctx.timer = nw.component.timer.create(0.75)
+    ctx.timer = nw.component.timer.create(2)
+end
+
+function play_resolve.resolve_play(ctx, user, target)
+    local player_to_play = user:ensure(dl.component.card_to_play)
+
+    if #player_to_play > 0 then
+        local card = list(player_to_play:head())
+        local cards_left = player_to_play:body()
+        user:set(dl.component.card_to_play, cards_left)
+        ctx.change[user] = dl.system.battle.aggregate_card_effects(
+            user, target, card, ctx.change[user]
+        )
+    end
+
+    return #player_to_play
 end
 
 function play_resolve.update(ctx, dt)
@@ -17,23 +32,13 @@ function play_resolve.update(ctx, dt)
 
     ctx.timer:reset()
 
-    local player_to_play = ctx.player:ensure(dl.component.card_to_play)
-    if #player_to_play > 0 then
-        local card = list(player_to_play:head())
-        ctx.player:set(dl.component.card_to_play, player_to_play:body())
-        ctx.change[ctx.player] = dl.system.battle.aggregate_card_effects(
-            ctx.player, ctx.enemy, card, ctx.change[ctx.player]
-        )
+
+
+    if play_resolve.resolve_play(ctx, ctx.player, ctx.enemy) ~= 0 then
         return
     end
 
-    local enemy_to_play = ctx.enemy:ensure((dl.component.card_to_play))
-    if #enemy_to_play > 0 then
-        local card = list(enemy_to_play:head())
-        ctx.enemy:set(dl.component.card_to_play, enemy_to_play:body())
-        ctx.change[ctx.enemy] = dl.system.battle.aggregate_card_effects(
-            ctx.enemy, ctx.player, card, ctx.change[ctx.enemy]
-        )
+    if play_resolve.resolve_play(ctx, ctx.enemy, ctx.player) ~= 0 then
         return
     end
 
@@ -85,7 +90,16 @@ function play_resolve.draw_overlay(ctx)
     local bottom = spatial(0, dl.constants.field_screen.y, dl.constants.field_screen.x, 0)
         :up(0, 100, nil, 40)
 
-    dl.render.button("Resolving...", bottom)
+    dl.render.button("Resolving... (space to skip)", bottom)
+end
+
+function play_resolve.keypressed(ctx, key)
+    if key == "space" and not ctx.skipped then
+        ctx.skipped = true
+        while play_resolve.resolve_play(ctx, ctx.player, ctx.enemy) > 0 do end
+        while play_resolve.resolve_play(ctx, ctx.enemy, ctx.player_card) > 0 do end
+        ctx.timer:reset()
+    end
 end
 
 function play_resolve.block_event(ctx, event)
