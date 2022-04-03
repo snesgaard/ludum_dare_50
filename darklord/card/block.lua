@@ -5,4 +5,5 @@ return function(ctx)
         :set(dl.component.attack, 0)
         :set(dl.component.defend, 4)
         :set(dl.component.title, "Block")
+        :set(dl.component.text, "Don't hit me!")
 end

@@ -23,8 +23,8 @@ function action_card:__call(x, y, card_entity)
 
     local title = card_entity:ensure(dl.component.title)
     local text = card_entity:ensure(dl.component.text)
-    local attack = card_entity:ensure(dl.component.attack)
-    local defend = card_entity:ensure(dl.component.defend)
+    local attack = dl.system.battle.read_attack(card_entity)
+    local defend = dl.system.battle.read_defend(card_entity)
 
     gfx.push()
     gfx.translate(x, y)

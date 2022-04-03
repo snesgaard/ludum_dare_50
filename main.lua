@@ -44,7 +44,9 @@ function love.draw()
 --    )
 
     world("draw")
+    world("draw_overlay")
     gfx.origin()
 --    dl.render.stat_ui(love.math.random(0, 9999), 20)
     world("draw_gui")
+    world("draw_overlay_gui")
 end

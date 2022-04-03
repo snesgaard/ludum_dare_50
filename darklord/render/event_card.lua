@@ -4,14 +4,16 @@ local atlas = "art/characters"
 
 local frames = {
     generic = "card_back_generic",
-    battle = "card_back_battle",
+    battle = "angry_ooze",
     event = "card_back_event",
     resource = "card_back_resource",
     rest = "card_back_rest"
 }
 
-local function get_frame(type)
-    local frame_name = frames[type]
+local function get_frame(card_type)
+    if type(card_type) == "table" then return card_type end
+
+    local frame_name = frames[card_type]
     if not frame_name then return end
 
     return get_atlas(atlas):get_frame(frame_name)
@@ -26,12 +28,18 @@ function event_card:card_size()
 end
 
 function event_card:__call(type, x, y)
-    get_frame("generic"):draw(x, y)
+    gfx.stencil(function()
+        gfx.setColorMask(true, true, true, true)
+        get_frame("generic"):draw(x, y)
+    end, "replace", 1)
+    gfx.setStencilTest("equal", 1)
 
     local top_frame = get_frame(type)
 
     if not top_frame then return end
     top_frame:draw(x, y)
+
+    gfx.setStencilTest()
 end
 
 return setmetatable({}, event_card)

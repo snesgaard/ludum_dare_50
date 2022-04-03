@@ -3,31 +3,98 @@ local constants = dl.constants
 
 local battle = {}
 
-battle.MAX_PLAY = 3
+local rng = love.math.random
 
-function battle.on_push(ctx, player)
-    ctx.hand = {
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.slap(ctx),
-        dl.card.block(ctx),
-        dl.card.block(ctx),
-        dl.card.block(ctx)
-    }
+battle.MAX_PLAY = dl.constants.MAX_PLAY
+battle.MAX_HAND = dl.constants.MAX_HAND
+battle.FADE_TIME = 1.0
 
+function battle.enemy_end_animation(ctx, dt)
+    ctx.enemy_fade = ctx.enemy_fade or 0
+    ctx.enemy_fade = ctx.enemy_fade + dt
+    return battle.FADE_TIME <= ctx.enemy_fade
+end
+
+function battle.on_push(ctx, player, enemy)
     ctx.card_hovered = nil
 
+    local enemy_deck = {}
+    for _, card in ipairs(enemy.card_pool) do
+        table.insert(enemy_deck, card(ctx))
+    end
+
+    ctx.enemy_template = enemy
+    local threat = player:ensure(dl.component.threat)
+
     ctx.enemy = ctx:entity()
-        :set(dl.component.health, 10)
-        :set(dl.component.card_to_play, {dl.card.slap(ctx)})
+        :set(dl.component.health, 10 + threat)
+        :set(dl.component.deck, enemy_deck)
+        :set(dl.component.ai_card_order, enemy_deck, 3)
+        :set(dl.component.card_to_play)
+
+
+    for _, card in ipairs(enemy_deck) do
+        dl.system.battle.change_attack(card, threat)
+        dl.system.battle.change_defend(card, threat)
+    end
 
     ctx.player = player
-        :set(dl.component.hand, ctx.hand)
+        :set(dl.component.hand, list((player % dl.component.deck):unpack()))
         :set(dl.component.card_to_play)
+
+    battle.prepare_enemy_move(ctx.enemy)
+end
+
+function battle.is_dead(entity)
+    return entity:ensure(dl.component.health) <= 0
+end
+
+function battle.on_pop(ctx)
+    ctx.enemy:destroy()
+
+    for _, card in ipairs(ctx.player:ensure(dl.component.deck)) do
+        dl.system.battle.reset_card(card)
+    end
+end
+
+function battle.update(ctx, dt)
+    if not ctx.battle_is_over then return end
+
+    if ctx.battle_end_animation ~= nil and not ctx.battle_end_animation(ctx, dt) then
+        return
+    end
+
+    if battle.is_dead(ctx.player) then
+        ctx.world:move(dl.scene.game_over)
+    elseif battle.is_dead(ctx.enemy) then
+        local reward_pool = ctx.enemy_template.reward_pool or list()
+        local reward_instances = list()
+
+        for i = 1, 3 do
+            local card_type = reward_pool[rng(#reward_pool)]
+            table.insert(reward_instances, card_type(ctx))
+        end
+
+        ctx.world:move(
+            dl.scene.card_reward, ctx.player, reward_instances
+
+        )
+    end
+
+
+end
+
+function battle.prepare_enemy_move(enemy)
+    local card_order = enemy % dl.component.ai_card_order
+    local card_to_play = enemy:ensure(dl.component.card_to_play)
+
+    if #card_order == 0 then return end
+
+    local card = card_order[#card_order]
+    table.remove(card_order)
+    table.insert(card_order, 1, card)
+
+    table.insert(card_to_play, card)
 end
 
 function battle.card_offset(i, w, selected)
@@ -43,8 +110,11 @@ function battle.draw_enemy(ctx)
     local w, h = enemy_frame:size()
     local fs = constants.field_scale
     local x, y = gfx.getWidth() / (2 * fs.x), gfx.getHeight() / (3 * fs.y)
+    local dx = ctx.enemy_fade and math.sin(ctx.enemy_fade * 30) * 10 or 0
+    local alpha = ctx.enemy_fade and 1 - ctx.enemy_fade / battle.FADE_TIME or 1
+    gfx.setColor(1, 1, 1, alpha)
     enemy_frame:draw(
-        "origin", x, y
+        "origin", x + dx, y
     )
     local origin = enemy_frame.slices.origin
 
@@ -99,7 +169,7 @@ function battle.draw(ctx)
         :scale(-1, 1)
         :sanitize()
         :move(gfx.getWidth() / constants.field_scale.x, 0)
-        :move(-100, 40)
+        :move(-100, 60)
 
     for i, card in ipairs(to_play) do
         local dx = battle.card_offset(i, card_size.w)
@@ -110,7 +180,7 @@ function battle.draw(ctx)
     end
 
     local play_size = dl.render.action_card.card_size()
-        :move(100, 40)
+        :move(100, 60)
     local to_play = ctx.enemy:get(dl.component.card_to_play)
     for i, card in ipairs(to_play) do
         local dx = battle.card_offset(i, card_size.w)
@@ -118,6 +188,45 @@ function battle.draw(ctx)
             play_size.x + dx * 0.5, play_size.y,
             card
         )
+    end
+
+    local control_str = [[
+CONTROLS
+<- ->       :: select card
+space       :: add card to play
+enter        :: play cards
+backspace :: undo added card
+    ]]
+
+    local control_opt = {
+        align="left", valign="top", font=dl.render.button.text_opt.font
+    }
+    local button_layout = spatial(constants.field_screen.x, 150, 150, 65)
+        :left()
+        :move(10, 25)
+    dl.render.button(control_str, button_layout, false, control_opt)
+
+    dl.render.button("Enemy play", spatial(-10, 30, 100, 20))
+    dl.render.button("Your play", spatial(constants.field_screen.x + 10 - 100, 30, 100, 20))
+end
+
+function battle.exceture_turn(ctx)
+    if ctx.battle_is_over then return end
+
+    local change = dl.system.battle.resolve(ctx.player, ctx.enemy)
+
+    dl.system.battle.apply_resolution(change)
+
+    ctx.player:set(dl.component.card_to_play)
+    ctx.enemy:set(dl.component.card_to_play)
+
+    battle.prepare_enemy_move(ctx.enemy)
+
+    if battle.is_dead(ctx.enemy) then
+        ctx.battle_is_over = true
+        ctx.battle_end_animation = battle.enemy_end_animation
+    elseif battle.is_dead(ctx.player) then
+        ctx.battle_is_over = true
     end
 end
 
@@ -149,27 +258,13 @@ function battle.keypressed(ctx, key)
         table.remove(to_play)
         table.insert(hand, card)
     elseif key == "return" then
-        local change = dl.system.battle.resolve(ctx.player, ctx.enemy)
-
-
-        ctx.enemy:map(dl.component.health, function(h)
-            return h - change.enemy.damage
-        end)
-
-        print(ctx.player:get(dl.component.health))
-        ctx.player:map(dl.component.health, function(hp)
-            return hp - change.player.damage
-        end)
-
-        print(ctx.player:get(dl.component.health))
-
-        ctx.player:set(dl.component.card_to_play)
-        ctx.enemy:set(dl.component.card_to_play)
+        battle.exceture_turn(ctx)
     end
 end
 
 function battle.draw_gui(ctx)
-    dl.render.event_title("Battle")
+    local title = ctx.enemy_template.name or "Unknown"
+    dl.render.event_title(title)
 end
 
 return battle
