@@ -30,9 +30,9 @@ mystery.font = gfx.newFont(8, "mono")
 
 function mystery.on_push(ctx)
     ctx.options = {
-        "kick",
-        "poop",
-        "do a little dance"
+        "cry",
+        "do a little dance",
+        "ZOOOM!"
     }
     ctx.options_text_box = {}
 
@@ -57,7 +57,13 @@ function mystery.draw(ctx)
 
     gfx.setColor(1, 1, 1)
     dl.render.text(
-        "You do a thing",
+        [[
+I need your strongest potion, potion maker.
+
+You can't handle my potions adventurer.
+
+:(
+        ]],
         mystery.text_box.x, mystery.text_box.y,
         mystery.text_box.w, mystery.text_box.h,
         {align = "left", valign = "top", font=mystery.font}
@@ -80,6 +86,24 @@ function mystery.mousemoved(ctx, x, y, dx, dy, fx, fy)
         local bg_box = mystery.bg_box_from_text_box(box)
         if bg_box:is_point_inside(fx, fy) then
             ctx.hovered_option = i
+        end
+    end
+end
+
+function mystery.keypressed(ctx, key)
+    local size = #ctx.options
+
+    if key == "up" then
+        if ctx.hovered_option == nil or ctx.hovered_option == 1 then
+            ctx.hovered_option = size
+        else
+            ctx.hovered_option = ctx.hovered_option - 1
+        end
+    elseif key == "down" then
+        if ctx.hovered_option == nil or ctx.hovered_option == size then
+            ctx.hovered_option = 1
+        else
+            ctx.hovered_option = ctx.hovered_option + 1
         end
     end
 end

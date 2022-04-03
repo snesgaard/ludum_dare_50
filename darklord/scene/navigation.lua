@@ -47,7 +47,6 @@ end
 function navigation.mousepressed(ctx, x, y, button, fx, fy)
     for index, box in ipairs(ctx.click_boxes) do
         if box:is_point_inside(fx, fy) then
-            print("You clicked a ", ctx.event_options[index])
             ctx.world:pop("fafa")
             return
         end
