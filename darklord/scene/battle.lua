@@ -60,7 +60,17 @@ end
 
 function battle.on_reveal(ctx, confirmed)
     if confirmed then
-        battle.exceture_turn(ctx)
+        --battle.exceture_turn(ctx)
+        ctx.world:push(dl.scene.play_resolve, ctx.player, ctx.enemy)
+    elseif confirmed == nil then
+        battle.prepare_enemy_move(ctx.enemy)
+
+        if battle.is_dead(ctx.enemy) then
+            ctx.battle_is_over = true
+            ctx.battle_end_animation = battle.enemy_end_animation
+        elseif battle.is_dead(ctx.player) then
+            ctx.battle_is_over = true
+        end
     end
 end
 
@@ -176,7 +186,7 @@ function battle.draw(ctx)
         :scale(-1, 1)
         :sanitize()
         :move(gfx.getWidth() / constants.field_scale.x, 0)
-        :move(-100, 60)
+        :move(-200, 60)
 
     for i, card in ipairs(to_play) do
         local dx = battle.card_offset(i, card_size.w)
@@ -214,8 +224,12 @@ backspace :: undo added card
     dl.render.button(control_str, button_layout, false, control_opt)
 
     dl.render.button("Enemy play", spatial(-10, 30, 100, 20))
-    local play_string = string.format("Your play %i / %i", #to_play, 3)
-    dl.render.button(play_string, spatial(constants.field_screen.x + 10 - 100, 30, 100, 20))
+
+    local play_string = string.format("Cards left: %i", 3 - #to_play)
+    local play_layout = spatial(constants.field_screen.x + 10 - 100, 30, 100, 20)
+
+    dl.render.button(play_string, play_layout)
+
 end
 
 function battle.exceture_turn(ctx)
@@ -268,6 +282,7 @@ function battle.keypressed(ctx, key)
     elseif key == "return" then
         --battle.exceture_turn(ctx)
         ctx.world:push(dl.scene.confirm, "Activate played cards?")
+        --ctx.world:push(dl.scene.play_resolve, ctx.player, ctx.enemy)
     end
 end
 

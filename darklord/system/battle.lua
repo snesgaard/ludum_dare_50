@@ -37,9 +37,9 @@ function battle.reset_card(card)
     card:set(dl.component.temporary_attack):set(dl.component.temporary_defend)
 end
 
-function battle.aggregate_card_effects(user, target, cards)
-    local card_stack = list(unpack(cards)):reverse()
-    local effect = {attack = 0, defend = 0, heal = 0}
+function battle.aggregate_card_effects(user, target, cards, effect)
+    local card_stack = list(unpack(cards or {})):reverse()
+    local effect = effect or {attack = 0, defend = 0, heal = 0}
 
     while #card_stack > 0 do
         local card = card_stack[#card_stack]
@@ -55,17 +55,9 @@ function battle.aggregate_card_effects(user, target, cards)
     return effect
 end
 
-function battle.resolve(player, enemy)
-    local player_card = player:get(dl.component.card_to_play)
-    local enemy_card = enemy:get(dl.component.card_to_play)
-
-    local player_effect = battle.aggregate_card_effects(
-        player, enemy, player_card
-    )
-    local enemy_effect = battle.aggregate_card_effects(
-        enemy, player, enemy_card
-    )
-
+function battle.format_change(player, enemy, player_effect, enemy_effect)
+    local player_effect = player_effect or {attack = 0, defend = 0, heal = 0}
+    local enemy_effect = enemy_effect or {attack = 0, defend = 0, heal = 0}
     local player_change = {
         damage = math.max(0, enemy_effect.attack - player_effect.defend),
         heal = player_effect.heal
@@ -81,6 +73,20 @@ function battle.resolve(player, enemy)
     change[enemy] = enemy_change
 
     return change
+end
+
+function battle.resolve(player, enemy)
+    local player_card = player:get(dl.component.card_to_play)
+    local enemy_card = enemy:get(dl.component.card_to_play)
+
+    local player_effect = battle.aggregate_card_effects(
+        player, enemy, player_card
+    )
+    local enemy_effect = battle.aggregate_card_effects(
+        enemy, player, enemy_card
+    )
+
+    return battle.format_change(player_effect, enemy_effect)
 end
 
 function battle.apply_resolution(all_changes)
