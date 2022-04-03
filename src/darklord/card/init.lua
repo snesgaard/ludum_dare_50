@@ -209,4 +209,21 @@ function rh.barricade(ctx)
         :set(dl.component.effect, effect)
 end
 
+function rh.panic(ctx)
+    local function effect(immediate, user)
+        local deck = user:ensure(dl.component.deck)
+
+        for _, card in ipairs(deck) do
+            local d = battle.read_defend(card)
+            battle.change_defend(card, -d)
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.title, "Panic!")
+        :set(dl.component.defend, 99)
+        :set(dl.component.text, "Reduce all card defend to 0.")
+        :set(dl.component.effect, effect)
+end
+
 return setmetatable(rh, rh)

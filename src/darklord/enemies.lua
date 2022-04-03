@@ -4,7 +4,8 @@ local common_pool = list(
     dl.card.overcommit,
     dl.card.better_block,
     dl.card.megaslap,
-    dl.card.barricade
+    dl.card.barricade,
+    dl.card.panic
 )
 
 local enemies = {}
