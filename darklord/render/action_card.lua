@@ -5,7 +5,7 @@ local action_card = {}
 action_card.__index = action_card
 
 action_card.title_font = gfx.newFont(10, "mono")
-action_card.text_font = gfx.newFont(8, "mono")
+action_card.text_font = gfx.newFont(9, "mono")
 
 function action_card:card_size()
     local frame = get_atlas("art/characters"):get_frame("card_action_generic")

@@ -25,6 +25,7 @@ function battle.on_push(ctx, player, enemy)
 
     ctx.enemy_template = enemy
     local threat = player:ensure(dl.component.threat)
+    local stat_threat = math.floor(threat / 3)
 
     ctx.enemy = ctx:entity()
         :set(dl.component.health, 10 + threat)
@@ -34,8 +35,8 @@ function battle.on_push(ctx, player, enemy)
 
 
     for _, card in ipairs(enemy_deck) do
-        dl.system.battle.change_attack(card, threat)
-        dl.system.battle.change_defend(card, threat)
+        dl.system.battle.change_attack(card, stat_threat)
+        dl.system.battle.change_defend(card, stat_threat)
     end
 
     ctx.player = player
@@ -57,6 +58,12 @@ function battle.on_pop(ctx)
     end
 end
 
+function battle.on_reveal(ctx, confirmed)
+    if confirmed then
+        battle.exceture_turn(ctx)
+    end
+end
+
 function battle.update(ctx, dt)
     if not ctx.battle_is_over then return end
 
@@ -67,11 +74,11 @@ function battle.update(ctx, dt)
     if battle.is_dead(ctx.player) then
         ctx.world:move(dl.scene.game_over)
     elseif battle.is_dead(ctx.enemy) then
-        local reward_pool = ctx.enemy_template.reward_pool or list()
+        local reward_pool = list(unpack(ctx.enemy_template.reward_pool)):shuffle()
         local reward_instances = list()
 
         for i = 1, 3 do
-            local card_type = reward_pool[rng(#reward_pool)]
+            local card_type = reward_pool[i]
             table.insert(reward_instances, card_type(ctx))
         end
 
@@ -181,8 +188,8 @@ function battle.draw(ctx)
 
     local play_size = dl.render.action_card.card_size()
         :move(100, 60)
-    local to_play = ctx.enemy:get(dl.component.card_to_play)
-    for i, card in ipairs(to_play) do
+    local enemy_to_play = ctx.enemy:get(dl.component.card_to_play)
+    for i, card in ipairs(enemy_to_play) do
         local dx = battle.card_offset(i, card_size.w)
         dl.render.action_card(
             play_size.x + dx * 0.5, play_size.y,
@@ -207,7 +214,8 @@ backspace :: undo added card
     dl.render.button(control_str, button_layout, false, control_opt)
 
     dl.render.button("Enemy play", spatial(-10, 30, 100, 20))
-    dl.render.button("Your play", spatial(constants.field_screen.x + 10 - 100, 30, 100, 20))
+    local play_string = string.format("Your play %i / %i", #to_play, 3)
+    dl.render.button(play_string, spatial(constants.field_screen.x + 10 - 100, 30, 100, 20))
 end
 
 function battle.exceture_turn(ctx)
@@ -258,7 +266,8 @@ function battle.keypressed(ctx, key)
         table.remove(to_play)
         table.insert(hand, card)
     elseif key == "return" then
-        battle.exceture_turn(ctx)
+        --battle.exceture_turn(ctx)
+        ctx.world:push(dl.scene.confirm, "Activate played cards?")
     end
 end
 

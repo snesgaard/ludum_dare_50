@@ -2,7 +2,11 @@ local dl = require "darklord"
 
 local common_pool = list(
     dl.card.finale,
-    dl.card.overcommit
+    dl.card.overcommit,
+    dl.card.lucky,
+    dl.card.better_block,
+    dl.card.happy_jazz,
+    dl.card.jazz_frenzy
 )
 
 local enemies = {}

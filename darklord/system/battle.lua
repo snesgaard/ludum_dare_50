@@ -29,19 +29,24 @@ function battle.read_attack(card)
     return math.max(0, a)
 end
 
+function battle.read_heal(card)
+    return card:ensure(dl.component.heal)
+end
+
 function battle.reset_card(card)
     card:set(dl.component.temporary_attack):set(dl.component.temporary_defend)
 end
 
 function battle.aggregate_card_effects(user, target, cards)
     local card_stack = list(unpack(cards)):reverse()
-    local effect = {attack = 0, defend = 0}
+    local effect = {attack = 0, defend = 0, heal = 0}
 
     while #card_stack > 0 do
         local card = card_stack[#card_stack]
         table.remove(card_stack)
         effect.attack = effect.attack + battle.read_attack(card)
         effect.defend = effect.defend + battle.read_defend(card)
+        effect.heal = effect.heal + battle.read_heal(card)
         --if card.effect then card.effect(effect, user, target, card_stack) end
         local card_effect = card:ensure(dl.component.effect)
         card_effect(effect, user, target, card_stack)
@@ -63,9 +68,11 @@ function battle.resolve(player, enemy)
 
     local player_change = {
         damage = math.max(0, enemy_effect.attack - player_effect.defend),
+        heal = player_effect.heal
     }
     local enemy_change = {
-        damage = math.max(0, player_effect.attack - enemy_effect.defend)
+        damage = math.max(0, player_effect.attack - enemy_effect.defend),
+        heal = player_effect.heal
     }
 
     local change = {}
@@ -79,7 +86,7 @@ end
 function battle.apply_resolution(all_changes)
     for entity, change in pairs(all_changes) do
         entity:map(dl.component.health, function(hp)
-            return hp - change.damage
+            return math.max(0, hp - change.damage + change.heal)
         end)
     end
 end

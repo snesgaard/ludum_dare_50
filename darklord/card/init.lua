@@ -1,5 +1,6 @@
 local dl = require "darklord"
 local battle = dl.system.battle
+local rng = love.math.random
 
 local rh = {}
 
@@ -97,7 +98,59 @@ end
 
 rh.finale = setmetatable({}, finale)
 
+function rh.happy_jazz(ctx)
+    local heal = 3
+    return ctx:entity()
+        :set(dl.component.defend, 5)
+        :set(dl.component.title, "Happy Jazz")
+        :set(dl.component.heal, 3)
+        :set(dl.component.text, string.format("Heal yourself for %i", heal))
+end
 
+function rh.jazz_frenzy(ctx)
+    local attack = 3
 
+    local function effect(immediate_effect, user)
+        local deck = user:ensure(dl.component.deck)
+        for _, card in ipairs(deck) do
+            battle.change_attack(card, attack)
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.defend, 5)
+        :set(dl.component.title, "Jazz Frenzy")
+        :set(dl.component.text, string.format("Increase attack by %i", attack))
+        :set(dl.component.effect, effect)
+end
+
+function rh.lucky(ctx)
+    local function effect(immediate_effect, user)
+        local deck = user:get(dl.component.hand) or user:ensure(dl.component.deck)
+
+        local deck = list(unpack(deck)):shuffle()
+
+        for _, card in ipairs(deck) do
+            local attack = battle.read_attack(card)
+
+            if attack > 0 then
+                battle.change_attack(card, attack)
+                return
+            end
+        end
+    end
+
+    return ctx:entity()
+        :set(dl.component.title, "Lucky")
+        :set(dl.component.text, "Doubles attack a random card in hand.")
+        :set(dl.component.effect, effect)
+end
+
+function rh.better_block(ctx)
+    return ctx:entity()
+        :set(dl.component.title, "Better Block")
+        :set(dl.component.defend, 10)
+        :set(dl.component.text, "Just better.")
+end
 
 return setmetatable(rh, rh)

@@ -138,8 +138,12 @@ function card_reward.keypressed(ctx, key)
 
         ctx.cursor_index = math.clamp(ctx.cursor_index, 1, #src)
     elseif key == "return" then
-        ctx.world:pop()
+        ctx.world:push(dl.scene.confirm, "Move on to next event?")
     end
+end
+
+function card_reward.on_reveal(ctx, confirm)
+    if confirm then ctx.world:pop() end
 end
 
 function card_reward.mousepressed(ctx, x, y, button, fx, fy)

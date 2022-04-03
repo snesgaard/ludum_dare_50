@@ -16,6 +16,8 @@ function rh.threat(t) return t or 0 end
 
 function rh.health(health) return math.max(0, health) end
 
+function rh.heal(h) return math.max(0, h or 0) end
+
 function rh.money(money) return math.max(0, money) end
 
 function rh.card_to_play(l) return l or list() end
